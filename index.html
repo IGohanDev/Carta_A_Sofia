@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Carta para Ti</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Open+Sans:wght@300;400&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #ffe3ec, #f8efff, #e0f0ff);
+      background-size: 600% 600%;
+      animation: gradientBackground 15s ease infinite;
+      font-family: 'Open Sans', sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    @keyframes gradientBackground {
+      0% { background-position: 0% 50% }
+      50% { background-position: 100% 50% }
+      100% { background-position: 0% 50% }
+    }
+
+    .envelope-closed {
+      width: 300px;
+      height: 200px;
+      position: relative;
+      cursor: pointer;
+      margin: auto;
+      z-index: 20;
+      animation: float 3s ease-in-out infinite;
+      transition: all 0.5s ease;
+    }
+
+    .envelope-closed:hover {
+      transform: translateY(-10px);
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+      100% { transform: translateY(0px); }
+    }
+
+    .envelope-body {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: #ffb0d0;
+      z-index: 1;
+      border-radius: 4px;
+      box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    .envelope-closed {
+        width: 300px;
+        height: 200px;
+        position: relative;
+        cursor: pointer;
+        margin: auto;
+        z-index: 20;
+        animation: float 3s ease-in-out infinite;
+        transition: all 0.5s ease;
+        perspective: 800px; 
+    }
+
+    .envelope-flap {
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-left: 150px solid transparent;
+        border-right: 150px solid transparent;
+        border-top: 100px solid #ffc1d9;
+        top: 0;
+        left: 0;
+        z-index: 3;
+        transform-origin: top;
+        transition: transform 0.4s ease;
+        transform: rotateX(0deg);
+        backface-visibility: hidden;
+    }
+    .envelope-closed:hover .envelope-flap {
+        transform: rotateX(-160deg); 
+    }
+
+
+    .envelope-line {
+      position: absolute;
+      width: 100%;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.2);
+      top: 50%;
+      left: 0;
+      z-index: 2;
+    }
+
+    .envelope-line:before {
+      content: '';
+      position: absolute;
+      width: 1px;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.2);
+      top: -100px;
+      left: 50%;
+    }
+
+    .envelope-inside {
+      position: absolute;
+      width: 90%;
+      height: 90%;
+      background-color: #ffd6e6;
+      z-index: 0;
+      top: 5%;
+      left: 5%;
+      border-radius: 2px;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .envelope-heart {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 30px;
+      height: 30px;
+      background-color: #d16ba5;
+      transform: translate(-50%, -50%) rotate(45deg);
+      animation: pulse 1.5s ease infinite;
+      z-index: 5;
+    }
+
+    .envelope-heart:before,
+    .envelope-heart:after {
+      content: "";
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background-color: #d16ba5;
+      border-radius: 50%;
+    }
+
+    .envelope-heart:before {
+      top: -15px;
+      left: 0;
+    }
+
+    .envelope-heart:after {
+      top: 0;
+      left: -15px;
+    }
+
+    @keyframes pulse {
+      0% { transform: translate(-50%, -50%) rotate(45deg) scale(1); }
+      50% { transform: translate(-50%, -50%) rotate(45deg) scale(1.1); }
+      100% { transform: translate(-50%, -50%) rotate(45deg) scale(1); }
+    }
+
+    .envelope-text {
+      position: absolute;
+      bottom: 15px;
+      width: 100%;
+      text-align: center;
+      font-family: 'Dancing Script', cursive;
+      color: #fff;
+      font-size: 24px;
+      z-index: 10;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+      opacity: 0.9;
+    }
+
+    .letter {
+      background-color: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.8);
+      z-index: 10;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .letter.show {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .letter-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: 3em;
+      color: #d16ba5;
+      margin-bottom: 30px;
+      text-shadow: 1px 1px 2px rgba(209, 107, 165, 0.2);
+      animation: fadeIn 2s ease forwards;
+    }
+
+    .letter-body {
+      font-size: 1.2em;
+      color: #555;
+      line-height: 1.8;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 300;
+      animation: fadeIn 2s ease 0.5s forwards;
+      opacity: 0;
+    }
+
+    .letter-body p {
+      margin-bottom: 20px;
+    }
+
+    .signature {
+      margin-top: 40px;
+      font-family: 'Dancing Script', cursive;
+      font-size: 2.2em;
+      color: #d16ba5;
+      animation: fadeIn 2s ease 1s forwards;
+      opacity: 0;
+      position: relative;
+    }
+
+    .signature::after {
+      content: '';
+      position: absolute;
+      width: 100px;
+      height: 2px;
+      background: linear-gradient(to right, transparent, #d16ba5, transparent);
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .close-button {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 30px;
+      height: 30px;
+      background-color: rgba(255, 207, 224, 0.3);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      opacity: 0.7;
+    }
+
+    .close-button:hover {
+      background-color: rgba(255, 207, 224, 0.8);
+      transform: rotate(90deg);
+    }
+
+    .close-button::before,
+    .close-button::after {
+      content: '';
+      position: absolute;
+      width: 15px;
+      height: 2px;
+      background-color: #d16ba5;
+    }
+
+    .close-button::before {
+      transform: rotate(45deg);
+    }
+
+    .close-button::after {
+      transform: rotate(-45deg);
+    }
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .petal-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .petal {
+      position: absolute;
+      top: -10px;
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle at center, #f9c6d1, #f8b0be);
+      border-radius: 50% 0 50% 50%;
+      opacity: 0.6;
+      animation: float-petal 12s infinite linear;
+      transform-origin: center;
+    }
+
+    @keyframes float-petal {
+      0% {
+        transform: translateY(0) rotate(0deg) scale(1);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(110vh) rotate(720deg) scale(0.5);
+        opacity: 0;
+      }
+    }
+
+    .sparkle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background-color: white;
+      box-shadow: 0 0 3px 1px rgba(255,255,255,0.8);
+      animation: sparkle-anim 2s infinite;
+      opacity: 0;
+    }
+
+    @keyframes sparkle-anim {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(0); opacity: 0; }
+    }
+
+    @media (max-width: 768px) {
+      .envelope-closed {
+        width: 260px;
+        height: 170px;
+      }
+      
+      .envelope-flap {
+        border-left: 130px solid transparent;
+        border-right: 130px solid transparent;
+        border-bottom: 90px solid #ffc1d9;
+      }
+      
+      .letter {
+        padding: 30px 20px;
+        width: 85%;
+      }
+      
+      .letter-title {
+        font-size: 2.2em;
+      }
+      
+      .letter-body {
+        font-size: 1em;
+      }
+      
+      .stamp {
+        width: 30px;
+        height: 40px;
+        top: 15px;
+        right: 15px;
+      }
+    }
+
+    .stamp {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 40px;
+      height: 50px;
+      background: linear-gradient(135deg, #ffeeee, #ffddee);
+      border: 1px dashed rgba(209, 107, 165, 0.4);
+      z-index: 10;
+      transform: rotate(5deg);
+    }
+
+    .stamp::after {
+      content: '';
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      right: 5px;
+      bottom: 5px;
+      border: 1px solid rgba(209, 107, 165, 0.2);
+      background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 50 L25 25 L75 25 Z' fill='%23d16ba5' fill-opacity='0.3'/%3E%3C/svg%3E");
+    }
+
+    .letter::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM39 11c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3z' fill='%23d16ba5' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+      opacity: 0.3;
+      z-index: -1;
+      border-radius: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="petal-container" id="petalContainer"></div>
+
+  <div class="envelope-closed" id="envelopeClosed">
+    <div class="envelope-body">
+      <div class="envelope-line"></div>
+    </div>
+    <div class="envelope-inside"></div>
+    <div class="envelope-flap"></div>
+    <div class="envelope-heart"></div>
+    <div class="envelope-text">Haz clic para abrir</div>
+    <div class="stamp"></div>
+  </div>
+
+  <div class="letter" id="letter">
+    <div class="close-button" id="closeButton"></div>
+    <div class="letter-title">Hola, Sofia 💗</div>
+    <div class="letter-body">
+        <p>Mi querida Piolina, eres tan hermosa. Me encanta todo de ti, cada parte de tu ser me llena de felicidad.</p>
+        <p>¿Quién hubiera pensado que un día conectaríamos de esta manera? Fue en el mejor momento para los dos, y espero seguir a tu lado por mucho más tiempo. Quiero que sepas que te amo profundamente.</p>
+        <p>Cómo desearía abrazarte ahora mismo... Me encantan tus abrazos, son tan reconfortantes. No sé cómo expresarlo, pero sentir tu cuerpo entre mis brazos es la mejor sensación del mundo. Me encanta todo de ti: tu respiración, tu aroma, tus preciosos ojos, tu hermosa carita, y tu cuerpo, mi amor, es perfecto.</p>
+        <p>Quiero que sepas que siempre tendrás toda mi atención, siempre buscaré un momento para ti, mi vida, porque eres una persona maravillosa. Siempre estaré a tu lado. Mi ayuda nunca te faltará, ni mis caricias. Todo lo que necesites, lo tendrás, amor mío.</p>
+      </div>      
+    <div class="signature">Te amo</div>
+  </div>
+
+  <script>
+    const container = document.getElementById('petalContainer');
+    const colors = [
+      'radial-gradient(circle at center, #f9c6d1, #f8b0be)',
+      'radial-gradient(circle at center, #f8d1e4, #f0b1d0)',
+      'radial-gradient(circle at center, #e0c6f9, #d0b1f0)',
+      'radial-gradient(circle at center, #c6e1f9, #b1d5f0)'
+    ];
+
+    const shapes = [
+      '50% 0 50% 50%',
+      '50% 50% 0 50%',
+      '0 50% 50% 50%',
+      '50% 50% 50% 0'
+    ];
+
+    for (let i = 0; i < 40; i++) {
+      const petal = document.createElement("div");
+      petal.className = "petal";
+      petal.style.left = `${Math.random() * 100}vw`;
+      petal.style.animationDelay = `${Math.random() * 10}s`;
+      petal.style.animationDuration = `${8 + Math.random() * 8}s`;
+      petal.style.width = petal.style.height = `${8 + Math.random() * 12}px`;
+      petal.style.background = colors[Math.floor(Math.random() * colors.length)];
+      petal.style.borderRadius = shapes[Math.floor(Math.random() * shapes.length)];
+      container.appendChild(petal);
+    }
+
+    const letter = document.getElementById('letter');
+    for (let i = 0; i < 15; i++) {
+      const sparkle = document.createElement("div");
+      sparkle.className = "sparkle";
+      sparkle.style.left = `${Math.random() * 100}%`;
+      sparkle.style.top = `${Math.random() * 100}%`;
+      sparkle.style.animationDelay = `${Math.random() * 2}s`;
+      letter.appendChild(sparkle);
+    }
+
+    const envelopeClosed = document.getElementById('envelopeClosed');
+    const closeButton = document.getElementById('closeButton');
+
+    envelopeClosed.addEventListener('click', function() {
+      letter.classList.add('show');
+      this.style.opacity = '0';
+      this.style.visibility = 'hidden';
+      
+      setTimeout(() => {
+        const letterTitle = document.querySelector('.letter-title');
+        letterTitle.style.opacity = '0';
+        letterTitle.style.animation = 'fadeIn 1s ease forwards';
+        
+        const letterBody = document.querySelector('.letter-body');
+        letterBody.style.opacity = '0';
+        letterBody.style.animation = 'fadeIn 1s ease 0.3s forwards';
+        
+        const signature = document.querySelector('.signature');
+        signature.style.opacity = '0';
+        signature.style.animation = 'fadeIn 1s ease 0.6s forwards';
+      }, 500);
+    });
+
+    closeButton.addEventListener('click', function() {
+      letter.classList.remove('show');
+      envelopeClosed.style.opacity = '1';
+      envelopeClosed.style.visibility = 'visible';
+    });
+  </script>
+
+</body>
+</html>
