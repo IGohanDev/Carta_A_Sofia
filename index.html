@@ -86,10 +86,10 @@
         transform: rotateX(0deg);
         backface-visibility: hidden;
     }
+    
     .envelope-closed:hover .envelope-flap {
         transform: rotateX(-160deg); 
     }
-
 
     .envelope-line {
       position: absolute;
@@ -312,6 +312,8 @@
       opacity: 0.6;
       animation: float-petal 12s infinite linear;
       transform-origin: center;
+      cursor: pointer;
+      pointer-events: auto;
     }
 
     @keyframes float-petal {
@@ -413,11 +415,59 @@
       z-index: -1;
       border-radius: 20px;
     }
+
+    .message-popup {
+      position: fixed;
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 15px 25px;
+      border-radius: 20px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      z-index: 100;
+      font-family: 'Dancing Script', cursive;
+      font-size: 20px;
+      color: #d16ba5;
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.3s ease;
+      text-align: center;
+      max-width: 300px;
+      border: 2px solid rgba(209, 107, 165, 0.3);
+    }
+
+    .message-popup.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .heart-particle {
+      position: absolute;
+      font-size: 14px;
+      color: #d16ba5;
+      pointer-events: none;
+      animation: float-heart 2s forwards;
+      opacity: 0;
+    }
+
+    @keyframes float-heart {
+      0% {
+        opacity: 0;
+        transform: translateY(0) scale(0.5);
+      }
+      20% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-80px) scale(1.5);
+      }
+    }
   </style>
 </head>
 <body>
 
   <div class="petal-container" id="petalContainer"></div>
+  <div id="messagePopup" class="message-popup"></div>
 
   <div class="envelope-closed" id="envelopeClosed">
     <div class="envelope-body">
@@ -434,16 +484,15 @@
     <div class="close-button" id="closeButton"></div>
     <div class="letter-title">Hola, Sofia 💗</div>
     <div class="letter-body">
-        <p>Mi querida Piolina, eres tan hermosa. Me encanta todo de ti, cada parte de tu ser me llena de felicidad.</p>
-        <p>¿Quién hubiera pensado que un día conectaríamos de esta manera? Fue en el mejor momento para los dos, y espero seguir a tu lado por mucho más tiempo. Quiero que sepas que te amo profundamente.</p>
-        <p>Cómo desearía abrazarte ahora mismo... Me encantan tus abrazos, son tan reconfortantes. No sé cómo expresarlo, pero sentir tu cuerpo entre mis brazos es la mejor sensación del mundo. Me encanta todo de ti: tu respiración, tu aroma, tus preciosos ojos, tu hermosa carita, y tu cuerpo, mi amor, es perfecto.</p>
-        <p>Quiero que sepas que siempre tendrás toda mi atención, siempre buscaré un momento para ti, mi vida, porque eres una persona maravillosa. Siempre estaré a tu lado. Mi ayuda nunca te faltará, ni mis caricias. Todo lo que necesites, lo tendrás, amor mío.</p>
+        <p>Hola, mi linda y bella Piolina. Sabes? En las noches, antes de irme a dormir, siempre pienso en ti con un único deseo: poder soñar contigo. Quisiera poder soñar seguido, pero aún más, quisiera que en mis sueños también estés tú a mi lado. Quisiera que mi yo de los sueños también te pueda sentir, pero por ahora no puedo. Sin embargo, no me preocupo, yo sé que un día no necesitaré soñar, porque cuando nos casemos podré estar a tu lado siempre.</p>
+        <p>Mi amor, eres una persona increíble, eres fantástica. Quiero que sepas que te amo demasiado. Si me preguntaras cuánto te amo, te diría siempre lo mismo: mucho. Porque mi amor sigue creciendo cada día por ti. No hay un día en que no piense en ti, amor mío. Eres una mujer increíble, que nunca se te olvide.</p>
       </div>      
     <div class="signature">Te amo</div>
   </div>
 
   <script>
     const container = document.getElementById('petalContainer');
+    const messagePopup = document.getElementById('messagePopup');
     const colors = [
       'radial-gradient(circle at center, #f9c6d1, #f8b0be)',
       'radial-gradient(circle at center, #f8d1e4, #f0b1d0)',
@@ -458,16 +507,91 @@
       '50% 50% 50% 0'
     ];
 
-    for (let i = 0; i < 40; i++) {
+    const romanticMessages = [
+      "Te quiero más que a las estrellas en el cielo",
+      "Eres el amor de mi vida, Sofia",
+      "Cada día te quiero más",
+      "Tu sonrisa ilumina mi mundo",
+      "Contigo todo es más bonito",
+      "Gracias por ser tan especial",
+      "Me encantan los momentos juntos",
+      "Eres mi persona favorita",
+      "Mi corazón late por ti",
+      "Eres mi Sol y mi Luna",
+      "No puedo esperar para nuestro futuro juntos",
+      "Tus abrazos son mi lugar favorito",
+      "Eres mi mayor bendición",
+      "Cada día te quiero más",
+      "Tu amor me hace mejor persona",
+      "Eres el sueño del que nunca quiero despertar",
+      "Contigo quiero pasar mi vida",
+      "Me haces muy feliz",
+      "Te amo infinitamente",
+      "Mi amor por ti crece cada día",
+      "Eres la razón de mi felicidad",
+      "Tu amor es mi refugio",
+      "Eres mi todo",
+      "Siempre estaré aquí para ti",
+      "Eres la melodía de mi corazón",
+      "Tu risa es mi música favorita",
+      "Eres la luz de mis días",
+      "Tu amor es mi hogar",
+      "Eres la flor más hermosa de mi jardín",
+      "Tu amor es mi mayor tesoro",
+      "Eres la razón por la que sonrío cada día",
+      "Tu amor es mi fuerza",
+      "Eres el sueño que nunca quiero despertar",
+      "Tu amor es mi refugio en la tormenta",
+      "Eres la chispa que enciende mi vida",
+      "Tu amor es mi mayor aventura",
+      "Eres la razón por la que creo en el amor",
+      "Tu amor es mi mayor regalo"
+    ];
+
+    for (let i = 0; i < 70; i++) {
       const petal = document.createElement("div");
       petal.className = "petal";
       petal.style.left = `${Math.random() * 100}vw`;
       petal.style.animationDelay = `${Math.random() * 10}s`;
-      petal.style.animationDuration = `${8 + Math.random() * 8}s`;
+      petal.style.animationDuration = `${8 + Math.random() * 35}s`;
       petal.style.width = petal.style.height = `${8 + Math.random() * 12}px`;
       petal.style.background = colors[Math.floor(Math.random() * colors.length)];
       petal.style.borderRadius = shapes[Math.floor(Math.random() * shapes.length)];
+      
+      petal.addEventListener('click', function(e) {
+        showRandomMessage(e.clientX, e.clientY);
+        createHeartParticles(e.clientX, e.clientY);
+      });
+      
       container.appendChild(petal);
+    }
+
+    function showRandomMessage(x, y) {
+      const randomMessage = romanticMessages[Math.floor(Math.random() * romanticMessages.length)];
+      messagePopup.textContent = randomMessage;
+      messagePopup.style.left = `${x - 150}px`;
+      messagePopup.style.top = `${y - 40}px`;
+      messagePopup.classList.add('show');
+      
+      setTimeout(() => {
+        messagePopup.classList.remove('show');
+      }, 2000);
+    }
+
+    function createHeartParticles(x, y) {
+      for (let i = 0; i < 5; i++) {
+        const heart = document.createElement('div');
+        heart.className = 'heart-particle';
+        heart.innerHTML = '❤️';
+        heart.style.left = `${x - 10 + Math.random() * 20}px`;
+        heart.style.top = `${y - 10 + Math.random() * 20}px`;
+        heart.style.animationDelay = `${Math.random() * 0.5}s`;
+        document.body.appendChild(heart);
+        
+        setTimeout(() => {
+          heart.remove();
+        }, 2000);
+      }
     }
 
     const letter = document.getElementById('letter');
